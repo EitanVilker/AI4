@@ -12,7 +12,7 @@ I set things up so most of my code was in a parent CSP class. The main exception
 
 
 ### Evaluation
-
+I was able to get a general CSP class that could be extended for specific problems. In addition, I managed to get heuristics that were useful for significantly speeding up the solution. My implementation of AC-3 didn't work very quickly without heuristics, but with them it improved program execution speed.
 
 
 ### Responses

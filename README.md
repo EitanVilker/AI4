@@ -1,1 +1,1 @@
-# AI4
+To execute my code, run `python Circuit_Board_Problem.py` or `python MapColoringProblem.py`. If you wish to adjust the examples, add your own variables, constraints, and domains to the repsective files. If you want to change the heuristic, switch it to `heuristic=` "LCV" or "MRV" or "degree." If you wish to use AC-3, set `ac3=True`

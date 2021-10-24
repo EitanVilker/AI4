@@ -6,3 +6,14 @@
     Eitan Vilker
 
 </h1>
+
+### Description
+I set things up so most of my code was in a parent CSP class. The main exceptions were the check_constraints methods, and for the circuit board problem, two functions to aid in constructing the domains and drawing the solution. The heuristics were also modified by the circuit board problem because it uses the constriants differently than the map coloring problem and thus needed some modificiations.
+
+
+### Evaluation
+
+
+
+### Responses
+

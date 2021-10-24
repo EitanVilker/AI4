@@ -72,16 +72,53 @@ class CircuitBoardProblem(ConstraintSatisfactionProblem):
                     matrix[self.board_height - down_pos - j - 1][i + left_pos] = int(variable)
         print(matrix)
 
+    # Function to get the variable with the smallest number of possible values
+    def MRV(self, variables, assignment):
+        next_variable = None
+        next_legal_move_count = 99999999
+
+        assignment_copy = assignment.copy()
+        for variable in variables:
+            if variable not in assignment:
+                var_index = self.variable_index_dict[variable]
+                legal_moves = len(self.domains[var_index])
+                for domain_entry in self.domains[var_index]:
+                    need_to_break = False
+                    assignment_copy[variable] = domain_entry
+                    for y in assignment_copy:
+                        if not self.check_constraints(variable, y, assignment_copy):
+                            need_to_break = True
+                    if need_to_break:
+                        legal_moves -= 1
+                        break
+                if legal_moves < next_legal_move_count:
+                    next_variable = variable
+                    next_legal_move_count = legal_moves
+        return next_variable
+
+    # Function to get the most constraining unassigned variable using the area of the rectangle
+    def degree_heuristic(self, variables, assignment):
+
+        next_variable = None
+        greatest_area = 0
+        for variable in variables:
+            area = self.constraints[variable][0] * self.constraints[variable][1]
+            if area > greatest_area:
+                greatest_area = area
+                next_variable = variable        
+    
+        return next_variable
+
 # Set up problem
-# variables = ["1", "2", "3", "4"]
-# domains = []
-# constraints = {}
-# constraints["1"] = (3, 2)
-# constraints["2"] = (5, 2)
-# constraints["3"] = (2, 3)
-# constraints["4"] = (7, 1)
-# board_width = 10
-# board_height = 3
+variables = ["1", "2", "3", "4"]
+domains = []
+constraints = {}
+constraints["1"] = (3, 2)
+constraints["2"] = (5, 2)
+constraints["3"] = (2, 3)
+constraints["4"] = (7, 1)
+board_width = 10
+board_height = 3
 
 # variables = ["1", "2"]
 # domains = []
@@ -91,21 +128,21 @@ class CircuitBoardProblem(ConstraintSatisfactionProblem):
 # board_width = 3
 # board_height = 3
 
-variables = ["1", "2", "3", "4", "5", "6", "7", "8"]
-domains = []
-constraints = {}
-constraints["1"] = (10, 1)
-constraints["2"] = (3, 4)
-constraints["3"] = (3, 2)
-constraints["4"] = (3, 3)
-constraints["5"] = (3, 2)
-constraints["6"] = (2, 2)
-constraints["7"] = (6, 1)
-constraints["8"] = (8, 2)
-board_width = 10
-board_height = 8
+# variables = ["1", "2", "3", "4", "5", "6", "7", "8"]
+# domains = []
+# constraints = {}
+# constraints["1"] = (10, 1)
+# constraints["2"] = (3, 4)
+# constraints["3"] = (3, 2)
+# constraints["4"] = (3, 3)
+# constraints["5"] = (3, 2)
+# constraints["6"] = (2, 2)
+# constraints["7"] = (6, 1)
+# constraints["8"] = (8, 2)
+# board_width = 10
+# board_height = 8
 
 cbp = CircuitBoardProblem(variables, domains, constraints, board_width, board_height)
-cbp.backtracking_search(heuristic="degree")
+cbp.backtracking_search(heuristic="LCV", ac3=False)
 cbp.draw_assignment()
 print("Assignments tried: " + str(cbp.assignments_tried))

@@ -34,13 +34,13 @@ class ConstraintSatisfactionProblem():
         if len(variables) == 0:
             return None
         
-        if not heuristic or heuristic == "LCV":
-            var_index = self.variable_index_dict[variables[0]] # int, index of variable
-        elif heuristic == "MRV":
+        if heuristic == "MRV":
             var_index = self.variable_index_dict[self.MRV(variables, assignment)]
         elif heuristic == "degree":
             var_index = self.variable_index_dict[self.degree_heuristic(variables, assignment)]
-        
+        else:
+            var_index = self.variable_index_dict[variables[0]] # int, index of variable
+
         if heuristic == "LCV":
             domain = self.least_constraining_value(self.variables[var_index], assignment)
         else:
@@ -60,8 +60,9 @@ class ConstraintSatisfactionProblem():
             
             # Restore domain
             if ac3:
-                for key in keys_added:
-                    domain.append(keys_removed)
+                for key in keys_removed:
+                    if key not in domain:
+                        domain.append(key)
 
         return None
 
@@ -78,19 +79,20 @@ class ConstraintSatisfactionProblem():
         while len(arc_queue) > 0:
             x_i, x_j = arc_queue.pop(0)
             revised, keys_removed = self.revise(x_i, x_j, assignment)
-            if len(self.domains[x_i]) == 0:
-                return None
+            if len(self.domains[self.variable_index_dict[x_i]]) == 0:
+                return []
             if revised:
                 return keys_removed
+        return []
 
     def revise(self, x_i, x_j, assignment):
         keys_removed = []
         assignment_copy = assignment.copy()
         revised = False
-        for i in self.domains[x_i]:
+        for i in self.domains[self.variable_index_dict[x_i]]:
             satisfied = False
             assignment_copy[x_i] = i
-            for j in self.domains[x_j]:
+            for j in self.domains[self.variable_index_dict[x_j]]:
                 assignment_copy[x_j] = j
                 if self.check_constraints(x_i, x_j, assignment):
                     satisfied = True
@@ -147,8 +149,8 @@ class ConstraintSatisfactionProblem():
             for current in self.domains[var_index]:
                 # For each neighbor constraint
                 for y in assignment:
-                    if y in constraints:
-                        if assignment[constraint] in self.domains[var_index]:
+                    if y in self.constraints[variable]:
+                        if assignment[y] == current:
                             temp_domain_size -= 1
                             # Break to look at the next possible value since we don't care if multiple neighbors are blocking the same value
                             break

@@ -24,7 +24,7 @@ class MapColoringProblem(ConstraintSatisfactionProblem):
         return True
 
 
-variables = ["Mexico", "Texas", "New England", "California", "Canada"]
+variables = ["Mexico", "Texas", "New England", "California", "Canada", "Greenland", "Iceland", "Russia", "Alaska"]
 domains = []
 for i in range(len(variables)):
     domains.append(["r", "g", "b"])
@@ -39,8 +39,13 @@ constraints["Mexico"] = ["Texas", "California"]
 constraints["California"] = ["Mexico", "Texas", "Canada"]
 constraints["Texas"] = ["Mexico", "California", "Canada", "New England"]
 constraints["New England"] = ["Texas", "Canada"]
-constraints["Canada"] = ["California", "Texas", "New England"]
+constraints["Canada"] = ["California", "Texas", "New England", "Alaska", "Greenland"]
+constraints["Russia"] = ["Alaska"]
+constraints["Greenland"] = ["Canada", "Iceland"]
+constraints["Iceland"] = ["Greenland"]
+constraints["Alaska"] = ["Canada", "Russia"]
 
 mcp = MapColoringProblem(variables, domains, constraints)
-mcp.backtracking_search(heuristic=None, ac3=True)
+mcp.backtracking_search(heuristic="degree", ac3=True)
 print(mcp.assignment)
+print("Assignments tried: " + str(mcp.assignments_tried))
